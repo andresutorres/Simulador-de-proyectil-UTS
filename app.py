@@ -59,8 +59,8 @@ fig = go.Figure(
         )
     ],
     layout=go.Layout(
-        xaxis=dict(range=[0, alcance_max * 1.1], title="Distancia Horizontal (m)"),
-        yaxis=dict(range=[0, altura_max * 1.3], title="Altura (m)"),
+        xaxis=dict(range=[0, alcance_max * 1.1], title="Distancia Horizontal (m)", fixedrange=True),
+        yaxis=dict(range=[0, max(altura_max * 1.5, 50)], title="Altura (m)"),
         updatemenus=[dict(
             type="buttons",
             buttons=[dict(label="🔥 Disparar Cañón", method="animate", args=[None, {"frame": {"duration": 20}}])]
@@ -81,3 +81,4 @@ fig = go.Figure(
 
 
 st.plotly_chart(fig, use_container_width=True)
+
