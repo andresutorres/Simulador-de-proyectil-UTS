@@ -28,7 +28,7 @@ y = (v0 * np.sin(angulo_rad) * t_puntos) - (0.5 * g * t_puntos**2)
 
 # --- Métricas ---
 alcance_max = (v0**2 * np.sin(2 * angulo_rad)) / g
-altura_max = (v0**2 * (np.sin(angulo_rad)**2)) / (2 * g)
+altura_max = (v0**2 * (np.sin(angulo_rad)**2)) / (2 * g) 
 distancia_h_max = alcance_max / 2
 
 # Mostrar métricas en pantalla
@@ -80,9 +80,10 @@ fig = go.Figure(
 
 st.plotly_chart(fig, use_container_width=True)
 
-# --- NUEVO CÓDIGO: Análisis de Sensibilidad (Comparación rápida) ---
+
+# --- SECCIÓN 2: Análisis de Sensibilidad (Comparación rápida) ---
 st.markdown("---")
-st.markdown("### 📊 Análisis de Sensibilidad: Comparación de Trayectorias")
+st.markdown("### 📊 Visualización Dinámica: Comparación de Trayectorias")
 st.write(f"Comparación de la trayectoria a diferentes ángulos, manteniendo la velocidad inicial seleccionada de **{v0} m/s**.")
 
 # Crear la figura de Matplotlib para Streamlit
@@ -110,3 +111,44 @@ ax.grid(True, linestyle='--', alpha=0.7)
 
 # Mostrar la gráfica de matplotlib en streamlit
 st.pyplot(fig_comp)
+
+
+# --- SECCIÓN 3: Análisis de la Gravedad ---
+st.markdown("---")
+st.markdown("### 🌍 Análisis de la Gravedad: Estándar vs Local (Bucaramanga)")
+st.write("Evaluación de la desviación en el alcance al utilizar la gravedad precisa de la región ($9.78 \, m/s^2$) frente a la estándar ($9.81 \, m/s^2$).")
+
+g_estandar = 9.81
+g_local = 9.78
+
+# Cálculo de alcances con ambas gravedades
+alcance_estandar = (v0**2 * np.sin(2 * angulo_rad)) / g_estandar
+alcance_local = (v0**2 * np.sin(2 * angulo_rad)) / g_local
+diferencia_cm = (alcance_local - alcance_estandar) * 100
+
+col_g1, col_g2, col_g3 = st.columns(3)
+col_g1.metric(label="Alcance (g = 9.81 m/s²)", value=f"{alcance_estandar:.3f} m")
+col_g2.metric(label="Alcance (g = 9.78 m/s²)", value=f"{alcance_local:.3f} m")
+col_g3.metric(label="Desviación de impacto", value=f"{diferencia_cm:.2f} cm", delta=f"Se aleja {diferencia_cm:.2f} cm", delta_color="normal")
+
+
+# --- SECCIÓN 4: Propagación de Incertidumbre Angular ---
+st.markdown("---")
+st.markdown("### 🎯 Propagación de Incertidumbre: Error en el Cañón")
+st.write(f"Evaluación del impacto en la distancia final si el cañón tiene un error de calibración de $\pm 1^\circ$ respecto al ángulo original de **{angulo_deg}°**.")
+
+angulo_mas_rad = np.radians(angulo_deg + 1.0)
+angulo_menos_rad = np.radians(angulo_deg - 1.0)
+
+alcance_mas = (v0**2 * np.sin(2 * angulo_mas_rad)) / g_estandar
+alcance_menos = (v0**2 * np.sin(2 * angulo_menos_rad)) / g_estandar
+
+dif_mas_cm = (alcance_mas - alcance_estandar) * 100
+dif_menos_cm = (alcance_menos - alcance_estandar) * 100
+
+col_u1, col_u2, col_u3 = st.columns(3)
+col_u1.metric(label=f"Alcance a {angulo_deg + 1}° (+1°)", value=f"{alcance_mas:.2f} m", delta=f"{dif_mas_cm:.2f} cm", delta_color="off")
+col_u2.metric(label=f"Alcance a {angulo_deg}° (Original)", value=f"{alcance_estandar:.2f} m")
+col_u3.metric(label=f"Alcance a {angulo_deg - 1}° (-1°)", value=f"{alcance_menos:.2f} m", delta=f"{dif_menos_cm:.2f} cm", delta_color="off")
+
+st.info("💡 **Conclusión:** Matemáticamente, una desviación de apenas $1^\circ$ altera significativamente el punto de impacto. Esto demuestra que el sistema posee una alta sensibilidad angular.")
