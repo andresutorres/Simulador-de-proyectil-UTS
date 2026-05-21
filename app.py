@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
-import matplotlib.pyplot as plt # <-- NUEVA LIBRERÍA AGREGADA
+import matplotlib.pyplot as plt
 
 # 1. Configuración de página compacta
 st.set_page_config(page_title="Simulador de Cinemática", layout="wide")
@@ -28,7 +28,7 @@ y = (v0 * np.sin(angulo_rad) * t_puntos) - (0.5 * g * t_puntos**2)
 
 # --- Métricas ---
 alcance_max = (v0**2 * np.sin(2 * angulo_rad)) / g
-altura_max = (v0**2 * (np.sin(angulo_rad)**2)) / (2 * g) 
+altura_max = (v0**2 * (np.sin(angulo_rad)**2)) / (2 * g)
 distancia_h_max = alcance_max / 2
 
 # Mostrar métricas en pantalla
@@ -38,7 +38,6 @@ col2.metric("Altura Máxima", f"{altura_max:.2f} m")
 col3.metric("Tiempo de Vuelo", f"{t_vuelo:.2f} s")
 
 # --- Gráfica Interactiva y Animada ---
-
 fig = go.Figure(
     data=[
         # 1. La línea de la trayectoria
@@ -88,7 +87,7 @@ st.write(f"Comparación de la trayectoria a diferentes ángulos, manteniendo la 
 
 # Crear la figura de Matplotlib para Streamlit
 fig_comp, ax = plt.subplots(figsize=(10, 5))
-angulos_comparar = [30, 45, 60] # Ángulos de prueba para el análisis
+angulos_comparar = [30, 45, 60]
 
 for angulo in angulos_comparar:
     theta_comp = np.radians(angulo)
