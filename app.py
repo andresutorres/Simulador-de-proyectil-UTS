@@ -1,12 +1,13 @@
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt # <-- NUEVA LIBRERÍA AGREGADA
 
 # 1. Configuración de página compacta
 st.set_page_config(page_title="Simulador de Cinemática", layout="wide")
 
 # Título de la pagina
-st.markdown("### 🎯 Cazadores de Trayectorias: Dominando el Ángulo Perfecto")
+st.markdown("### 🎯 Cazadores de Trayectorias: Análisis de sensibilidad angular y cinemática en la simulación del tiro parabólico")
 
 # 2. Barra lateral para ingreso numérico escrito
 st.sidebar.header("Configuración de Disparo")
@@ -27,7 +28,6 @@ y = (v0 * np.sin(angulo_rad) * t_puntos) - (0.5 * g * t_puntos**2)
 
 # --- Métricas ---
 alcance_max = (v0**2 * np.sin(2 * angulo_rad)) / g
-# Aquí está la corrección de la línea 27: potencia **2 en lugar de *2
 altura_max = (v0**2 * (np.sin(angulo_rad)**2)) / (2 * g) 
 distancia_h_max = alcance_max / 2
 
@@ -79,6 +79,35 @@ fig = go.Figure(
     ]) for i in range(len(x))]
 )
 
-
 st.plotly_chart(fig, use_container_width=True)
 
+# --- NUEVO CÓDIGO: Análisis de Sensibilidad (Comparación rápida) ---
+st.markdown("---")
+st.markdown("### 📊 Análisis de Sensibilidad: Comparación de Trayectorias")
+st.write(f"Comparación de la trayectoria a diferentes ángulos, manteniendo la velocidad inicial seleccionada de **{v0} m/s**.")
+
+# Crear la figura de Matplotlib para Streamlit
+fig_comp, ax = plt.subplots(figsize=(10, 5))
+angulos_comparar = [30, 45, 60] # Ángulos de prueba para el análisis
+
+for angulo in angulos_comparar:
+    theta_comp = np.radians(angulo)
+    # Calcular tiempo de vuelo para cada ángulo
+    t_vuelo_comp = (2 * v0 * np.sin(theta_comp)) / g
+    t_comp = np.linspace(0, t_vuelo_comp, num=100)
+    
+    # Ecuaciones cinemáticas
+    x_comp = v0 * np.cos(theta_comp) * t_comp
+    y_comp = v0 * np.sin(theta_comp) * t_comp - 0.5 * g * t_comp**2
+    
+    # Graficar dispersión/línea
+    ax.plot(x_comp, y_comp, label=f'Ángulo: {angulo}°')
+
+ax.set_title('Sensibilidad Angular del Alcance Máximo')
+ax.set_xlabel('Distancia Horizontal (m)')
+ax.set_ylabel('Altura (m)')
+ax.legend()
+ax.grid(True, linestyle='--', alpha=0.7)
+
+# Mostrar la gráfica de matplotlib en streamlit
+st.pyplot(fig_comp)
